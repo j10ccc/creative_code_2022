@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creative Code</title>
+</head>
+
+<body style="text-align: center;background-color: #000;">
+  <div style="display: inline-block;">
+    <canvas></canvas>
+  </div>
+</body>
+<script>
+  let str = window.location.href.split('?str=')[1];
+  if (str) str = decodeURI(str, "utf-8");
+  else str = "欢迎报考浙江工业大学计算机学院"
+  const canvas = document.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
+  let windowWidth = window.screen.width;
+  const fontSize = windowWidth < 500 ? Math.floor(window.screen.width * .8) : 500;
+  const textHeight = fontSize;
+  const textWidth = fontSize;
+  canvas.width = fontSize;
+  canvas.height = fontSize * str.length + 50;
+
+  const gap = Math.floor(fontSize * .05);
+  const scale = Math.floor(fontSize * .05);
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#fff";
+  ctx.font = textHeight + "px Arial";
+  for (let i = 0; i < str.length; i++) {
+    ctx.fillText(str[i], canvas.width / 2, (i + 1) * textHeight);
+  }
+
+  let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let h = 0; h <= imgData.height; h += gap) {
+    for (let w = 0; w <= imgData.width; w += gap) {
+      let pos = (textWidth * h + w) * 4;
+      let r = imgData.data[pos];
+      let g = imgData.data[pos + 1];
+      let b = imgData.data[pos + 2];
+      if (r + g + b === 255 * 3) {
+        let image = new Image();
+        image.src = "src/img/" + String(Math.floor(Math.random() * 3 + 1) + ".png");
+        image.onload = () => {
+          ctx.drawImage(image, w, h, scale, scale);
+        }
+      }
+    }
+  }
+</script>
+
+</html>
